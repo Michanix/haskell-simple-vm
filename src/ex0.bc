@@ -1,0 +1,5 @@
+# print(3-2)
+loadc 3
+loadc 2
+sub
+printint
