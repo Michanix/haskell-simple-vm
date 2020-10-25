@@ -6,6 +6,12 @@ import System.IO
 main :: IO ()
 main = do
   args <- getArgs
-  withFile (head args) ReadMode (\h -> do
-      content <- hGetContents h
-      putStr content)
+  case isValidFlag (head args) of
+    Just True -> do
+      content <- readFile (args!!1)
+      putStr content
+    Nothing   -> error "Wrong flag. Try with -v flag."
+
+isValidFlag :: String -> Maybe Bool
+isValidFlag "-v" = Just True
+isValidFlag _    = Nothing --error "Wrong flag. Try with -v flag."
