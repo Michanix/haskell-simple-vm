@@ -4,6 +4,7 @@ module VM
 
 import Instruction
 
+import System.Exit
 import Control.Monad.State
 import Control.Monad.IO.Class (liftIO)
 
@@ -14,7 +15,7 @@ type Stack = [Int]
 initStack :: Stack
 initStack = []
 
--- increment fp and pc
+-- increment counter
 incC :: Int -> Int
 incC = (+1)
 
@@ -23,8 +24,6 @@ data VM' = VM' { stack :: Stack
              , pc    :: PC
              , instr :: Instruction
              } deriving (Read)
-
-type VM a = StateT VM' IO a
 
 instance Show VM' where
   show = showVm
@@ -39,9 +38,10 @@ showVm VM' {stack = s, fp = fp, pc = pc, instr = instr} =
 initVM :: VM'
 initVM = VM' {stack=initStack, fp=0, pc=0, instr=None}
 
+type VM a = StateT VM' IO a
+
 runVM :: [Instruction] -> IO VM'
 runVM is = execStateT (mapM_ runInstr is) initVM
-
 
 runInstr ::Instruction -> VM ()
 runInstr i = case i of
@@ -50,11 +50,12 @@ runInstr i = case i of
   Pop         -> f pop
   Add         -> f (appBinOp i (+))
   Sub         -> f (appBinOp i (-))
-  Div         -> f (appBinOp i (div))
+  Div         -> f (appBinOp i div)
   Mul         -> f (appBinOp i (*))
   Eq          -> f (appLogOp i (==))
   Leq         -> f (appLogOp i (<=))
   Not         -> f notOp
+  Halt        -> do liftIO exitSuccess
   where f i = do
           vm <- get
         --  maybe (return()) (\x -> modify (push' x)) (Just val)
@@ -82,7 +83,6 @@ pop (VM' (x:xs) fp pc i) = VM' {stack=xs
                                ,pc=incC pc
                                ,instr=Pop
                                }
-
 
 -- Arithmetics
 type BinOp = (Int -> Int -> Int)
