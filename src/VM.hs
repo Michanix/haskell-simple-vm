@@ -1,5 +1,6 @@
 module VM
   ( VM' (..)
+   ,runVM
   ) where
 
 import Instruction
@@ -40,8 +41,8 @@ initVM = VM' {stack=initStack, fp=0, pc=0, instr=None}
 
 type VM a = StateT VM' IO a
 
-runVM :: [Instruction] -> IO VM'
-runVM is = execStateT (mapM_ runInstr is) initVM
+runVM :: [Instruction] -> IO ()
+runVM is = evalStateT (mapM_ runInstr is) initVM
 
 runInstr ::Instruction -> VM ()
 runInstr i = case i of
@@ -55,12 +56,25 @@ runInstr i = case i of
   Eq          -> f (appLogOp i (==))
   Leq         -> f (appLogOp i (<=))
   Not         -> f notOp
+  Printint    -> printint
+  Jump        -> undefined
+  Jumpz       -> undefined
+  Load        -> undefined
+  Store       -> undefined
+  Slide       -> undefined
+  Loadsp      -> undefined
+  Loadfp      -> undefined
+  Storefp     -> undefined
+  Loadr       -> undefined
+  Storer      -> undefined
   Halt        -> do liftIO exitSuccess
-  where f i = do
-          vm <- get
-        --  maybe (return()) (\x -> modify (push' x)) (Just val)
+  where f i = do            -- printing intermediate state
+          vm <- get         -- and modifying it
           modify i
-          liftIO $ print vm -- printing intermediate state
+          liftIO $ print vm
+        printint = do       -- special case
+          (VM' xs _ _ _) <- get
+          liftIO $ print (xs!!(length xs -1))
 
 -- VM instructions
 loadc :: Int -> VM' -> VM'
@@ -111,9 +125,3 @@ notOp (VM' (x:xs) fp pc i) = VM' {stack=g x:xs
                                  ,instr=Not
                                  }
   where g x = if x == 0 then 1 else 0
-
-printint :: VM' -> VM'
-printint (VM' (x:xs) fp pc i) = VM' {stack=xs
-                                    ,fp=fp
-                                    ,pc=incC pc
-                                    ,instr=PrintInt}

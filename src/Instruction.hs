@@ -20,19 +20,22 @@ data Instruction =
   | Eq
   | Leq
   | Not
-  | PrintInt
+  | Printint
   | Jump
   | Jumpz
   | Load
   | Store
   | Slide
-  | LoadSp
-  | LoadFp
-  | StoreFp
+  | Loadsp
+  | Loadfp
+  | Storefp
   | Loadr
   | Storer
   | Halt
-  deriving (Read, Typeable, Data) -- need that to show instructions in lowercase
+  deriving (Read,
+            Eq,
+            Typeable,
+            Data) -- need that to show instructions in lowercase
 
 instance Show Instruction where
   show  = showInstr
