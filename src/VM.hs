@@ -20,11 +20,11 @@ initStack = []
 incC :: Int -> Int
 incC = (+1)
 
-data VM' = VM' { stack :: Stack
-             , fp    :: FP
-             , pc    :: PC
-             , instr :: Instruction
-             } deriving (Read)
+data VM' = VM' {stack :: Stack
+               ,fp    :: FP
+               ,pc    :: PC
+               ,instr :: Instruction
+               } deriving (Read)
 
 instance Show VM' where
   show = showVm
