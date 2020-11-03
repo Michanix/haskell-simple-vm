@@ -44,5 +44,4 @@ showInstr (Loadc v) = "loadc " ++ show v -- special case
 showInstr (Load v)  = "load "  ++ show v
 showInstr (Slide v) = "slide " ++ show v
 showInstr (Loadr v) = "loadr " ++ show v
-showInstr i = showInstr' i
-  where showInstr' instr = map toLower . showConstr $ toConstr instr
+showInstr i = map toLower . showConstr $ toConstr i

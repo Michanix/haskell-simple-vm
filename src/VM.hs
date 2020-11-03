@@ -37,14 +37,14 @@ showVm (VM' s fp pc instr) =
     "instr: " ++ show instr ++ "\n"
 
 initVM :: VM'
-initVM = VM' {stack=initStack, fp=0, pc=0, instr=None}
+initVM = VM' {stack = initStack, fp = 0, pc = 0, instr = None}
 
 type VM a = StateT VM' IO a
 
 runVM :: [Instruction] -> IO VM'
-runVM is = execStateT (mapM_ runInstr is) initVM
+runVM is = execStateT (mapM runInstr is) initVM
 
-runInstr ::Instruction -> VM ()
+runInstr ::Instruction -> VM VM'
 runInstr i = case i of
   (Loadc val) -> f (loadc val)
   Dup         -> f dup
@@ -72,9 +72,12 @@ runInstr i = case i of
           vm <- get         -- and printing it
           modify i
           liftIO $ print vm
-        printint = do       -- special case
-          (VM' xs _ _ _) <- get
-          liftIO $ print (xs!!(length xs -1))
+          return vm
+        -- special case
+        -- prints stack first value
+        printint = get >>= \vm ->
+          liftIO $ print (stack vm!!(length (stack vm) - 1)) >>
+          return vm
 
 -- VM instructions
 -- instructions with argument

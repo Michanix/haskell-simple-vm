@@ -14,7 +14,7 @@ main :: IO ()
 main = getArgs >>= parseArgs
 
 parseArgs :: [String] -> IO ()
-parseArgs ("-v":file:_) = run file  >>= print >> exit
+parseArgs ("-v":file:_) = run file  >>= print  >> exit
 parseArgs (_:file:_)    = wrongFlag >> terminate
 parseArgs []            = noArgs    >> terminate
 
