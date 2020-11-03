@@ -85,7 +85,7 @@ loadc x (VM' s fp pc i) = VM' {stack   = x:s
                               }
 
 load :: Int -> VM' -> VM'
-load n (VM' (x:xs) fp pc i) = VM' {stack  = xs!!n : xs
+load n (VM' (x:xs) fp pc i) = VM' {stack = xs!!n : xs
                                   ,fp    = fp
                                   ,pc    = incC pc
                                   ,instr = Load n
@@ -141,7 +141,7 @@ appBinOp instr op (VM' (x:y:xs) fp pc i) = VM' {stack  = op y x:xs
                                                 ,fp    = fp
                                                 ,pc    = incC pc
                                                 ,instr = instr
-                                      }
+                                                }
 
 -- Logical operations
 type LogicalOp = (Int -> Int -> Bool)
