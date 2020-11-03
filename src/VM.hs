@@ -57,16 +57,16 @@ runInstr i = case i of
   Leq         -> f (appLogOp i (<=))
   Not         -> f notOp
   Printint    -> printint
-  Jump        -> undefined
-  Jumpz       -> undefined
+  Jump        -> f jump
+  Jumpz       -> f jumpz
   (Load val)  -> f (load val)
-  Store       -> undefined
+  Store       -> undefined -- TODO
   (Slide n)   -> f (slide n)
   Loadsp      -> f loadsp
   Loadfp      -> f loadfp
   Storefp     -> f storefp
-  Loadr       -> undefined
-  Storer      -> undefined
+  (Loadr n)   -> f (loadr n)
+  Storer      -> undefined -- TODO
   Halt        -> liftIO exitSuccess
   where f i = do            -- modifying intermediate state
           vm <- get         -- and printing it
@@ -77,11 +77,12 @@ runInstr i = case i of
           liftIO $ print (xs!!(length xs -1))
 
 -- VM instructions
+-- instructions with argument
 loadc :: Int -> VM' -> VM'
-loadc x (VM' s fp pc i) = VM' {stack   = x:s
-                               , fp    = fp
-                               , pc    = incC pc
-                               , instr = Loadc x
+loadc x (VM' s fp pc i) = VM' {stack = x:s
+                              ,fp    = fp
+                              ,pc    = incC pc
+                              ,instr = Loadc x
                               }
 
 load :: Int -> VM' -> VM'
@@ -98,6 +99,14 @@ slide n (VM' (x:xs) fp pc i) = VM' {stack = x : drop n xs
                                    ,instr = Slide n
                                    }
 
+loadr :: Int -> VM' -> VM'
+loadr n (VM' xs fp pc i) = VM' {stack = xs !! (length xs-1-fp-n):xs
+                              ,fp    = fp
+                              ,pc    = incC pc
+                              ,instr = Loadr n
+                              }
+
+-- instructions without argument
 dup :: VM' -> VM'
 dup (VM' (x:xs) fp pc i) = VM' {stack = x:x:xs
                                ,fp    = fp
@@ -111,6 +120,25 @@ pop (VM' (x:xs) fp pc i) = VM' {stack = xs
                                ,pc    = incC pc
                                ,instr = Pop
                                }
+
+jump :: VM' -> VM'
+jump (VM' (x:xs) fp pc i) = VM' {stack = xs
+                                ,fp    = fp
+                                ,pc    = x
+                                ,instr = Jump
+                                }
+
+jumpz :: VM' -> VM'
+jumpz (VM' (x:0:xs) fp pc i) = VM' {stack = xs
+                                ,fp       = fp
+                                ,pc       = x
+                                ,instr    = Jumpz
+                                }
+jumpz (VM' (x:1:xs) fp pc i) = VM' {stack = xs
+                                ,fp       = fp
+                                ,pc       = incC pc
+                                ,instr    = Jumpz
+                                }
 
 loadsp :: VM' -> VM'
 loadsp (VM' xs fp pc i) = VM' {stack = length xs - 1 : xs

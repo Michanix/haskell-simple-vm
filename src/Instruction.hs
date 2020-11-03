@@ -6,7 +6,7 @@ import Data.Data
 import Data.Typeable
 
 -- TODO:
--- jump, jumpz, store, loadr, storer
+-- store, storer
 data Instruction =
   None
   | Loadc Int
@@ -28,7 +28,7 @@ data Instruction =
   | Loadsp
   | Loadfp
   | Storefp
-  | Loadr
+  | Loadr Int
   | Storer
   | Halt
   deriving (Read,
@@ -42,6 +42,7 @@ instance Show Instruction where
 showInstr :: Instruction -> String
 showInstr (Loadc v) = "loadc " ++ show v -- special case
 showInstr (Load v)  = "load "  ++ show v
-showInstr (Slide v) = "slode " ++ show v
+showInstr (Slide v) = "slide " ++ show v
+showInstr (Loadr v) = "loadr " ++ show v
 showInstr i = showInstr' i
   where showInstr' instr = map toLower . showConstr $ toConstr instr
