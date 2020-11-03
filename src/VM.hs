@@ -30,7 +30,7 @@ instance Show VM' where
   show = showVm
 
 showVm :: VM' -> String
-showVm VM' {stack = s, fp = fp, pc = pc, instr = instr} =
+showVm (VM' s fp pc instr) =
     "stack: " ++ show s  ++ "\n" ++
     "fp: "    ++ show fp ++ "\n" ++
     "pc: "    ++ show pc ++ "\n" ++
