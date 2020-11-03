@@ -43,5 +43,6 @@ instance Show Instruction where
 showInstr :: Instruction -> String
 showInstr (Loadc v) = "loadc " ++ show v -- special case
 showInstr (Load v)  = "load "  ++ show v
+showInstr (Slide v) = "slode " ++ show v
 showInstr i = showInstr' i
   where showInstr' instr = map toLower . showConstr $ toConstr instr
