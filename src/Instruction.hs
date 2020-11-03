@@ -6,8 +6,8 @@ import Data.Data
 import Data.Typeable
 
 
--- done:
--- loadc, dup, pop, add, sub, div, mul, eq, leq, not
+-- TODO:
+-- jump, jumpz, store, loadr, storer
 data Instruction =
   None
   | Loadc Int
@@ -23,9 +23,9 @@ data Instruction =
   | Printint
   | Jump
   | Jumpz
-  | Load
+  | Load Int
   | Store
-  | Slide
+  | Slide Int
   | Loadsp
   | Loadfp
   | Storefp
@@ -41,6 +41,7 @@ instance Show Instruction where
   show  = showInstr
 
 showInstr :: Instruction -> String
-showInstr (Loadc v) = "loadc " ++ show v
+showInstr (Loadc v) = "loadc " ++ show v -- special case
+showInstr (Load v)  = "load "  ++ show v
 showInstr i = showInstr' i
   where showInstr' instr = map toLower . showConstr $ toConstr instr
