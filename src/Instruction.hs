@@ -5,7 +5,6 @@ import Data.Char
 import Data.Data
 import Data.Typeable
 
-
 -- TODO:
 -- jump, jumpz, store, loadr, storer
 data Instruction =
